@@ -1,10 +1,10 @@
-import Board from "../models/Board.js";
+import BoardService from "../services/BoardServices.js";
 import NaoEncontrado from "../error/NaoEncontrado.js";
 
-class boardController {
+class BoardController {
   static listarBoards = async (req, res, next) => {
     try {
-      const listaBoards = await Board.find();
+      const listaBoards = await BoardService.listarTudo();
       res.status(200).json(listaBoards);
     } catch (error) {
       next(error);
@@ -14,8 +14,7 @@ class boardController {
   static buscarBoardPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const boardResultado = await Board.findById(id);
-
+      const boardResultado = await BoardService.buscarPorId(id);
       if (boardResultado !== null) {
         res.status(200).json(boardResultado);
       } else {
@@ -28,8 +27,7 @@ class boardController {
 
   static adicionarBoard = async (req, res, next) => {
     try {
-      let board = new Board(req.body);
-      const boardResultado = await board.save();
+      const boardResultado = await BoardService.criarBoard(req.body);
       res.status(201).send(boardResultado.toJSON());
     } catch (error) {
       next(error);
@@ -39,11 +37,7 @@ class boardController {
   static atualizarBoard = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const boardResultado = await Board.findByIdAndUpdate(
-        id,
-        { $set: req.body },
-        { new: true },
-      );
+      const boardResultado = await BoardService.atualizar(id, req.body);
 
       if (boardResultado !== null) {
         res
@@ -60,7 +54,7 @@ class boardController {
   static excluirBoard = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const boardResultado = await Board.findByIdAndDelete(id);
+      const boardResultado = await BoardService.excluir(id);
 
       if (boardResultado !== null) {
         res.status(200).send({ message: "Data deleted" });
@@ -83,10 +77,7 @@ class boardController {
 
       const alturaMar = parseFloat(altura);
 
-      const boardSugeridas = await Board.find({
-        ondaMinima: { $lte: alturaMar },
-        ondaMaxima: { $gte: alturaMar },
-      });
+      const boardSugeridas = await BoardService.buscarPorAltura(alturaMar);
 
       if (boardSugeridas.length > 0) {
         res.status(200).json({
@@ -108,4 +99,4 @@ class boardController {
   };
 }
 
-export default boardController;
+export default BoardController;

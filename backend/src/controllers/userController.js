@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import Boards from "../models/Board.js";
 import NaoEncontrado from "../error/NaoEncontrado.js";
 
-class userController {
+class UserController {
   static listarUsers = async (req, res, next) => {
     try {
       const listaUsers = await User.find();
@@ -58,7 +58,7 @@ class userController {
     }
   };
 
-  static deletarUser = async (req, res, next) => {
+  static excluirUser = async (req, res, next) => {
     try {
       const id = req.params.id;
       const userResultado = await User.findByIdAndDelete(id);
@@ -73,4 +73,4 @@ class userController {
   };
 }
 
-export default userController;
+export default UserController;

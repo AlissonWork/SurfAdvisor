@@ -1,14 +1,14 @@
 import express from "express";
-import boardController from "../controllers/boardController.js";
+import BoardController from "../controllers/BoardController.js";
 
 const router = express.Router();
 
 router
-  .get("/boards", boardController.listarBoards)
-  .get("/boards/recomendacao", boardController.recomendarBoard)
-  .get("/boards/:id", boardController.buscarBoardPorId)
-  .post("/boards", boardController.adicionarBoard)
-  .put("/boards/:id", boardController.atualizarBoard)
-  .delete("/boards/:id", boardController.excluirBoard);
+  .get("/boards", BoardController.listarBoards)
+  .get("/boards/recomendacao", BoardController.recomendarBoard)
+  .get("/boards/:id", BoardController.buscarBoardPorId)
+  .post("/boards", BoardController.adicionarBoard)
+  .put("/boards/:id", BoardController.atualizarBoard)
+  .delete("/boards/:id", BoardController.excluirBoard);
 
 export default router;
