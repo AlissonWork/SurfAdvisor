@@ -6,7 +6,7 @@ const boardSchema = new mongoose.Schema({
     type: String,
     required: [true, "The style of the surfboard is required."],
     enum: {
-      values: ["shortboard", "fish", "longboard", "funboard", "gun"],
+      values: ["shortboard", "fish", "longboard", "funboard", "gun", "softboard"],
       message: "{VALUE} not valid.",
     },
   },

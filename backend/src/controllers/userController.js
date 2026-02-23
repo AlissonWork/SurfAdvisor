@@ -1,11 +1,10 @@
-import User from "../models/User.js";
-import Boards from "../models/Board.js";
+import UserServices from "../services/UserServices.js";
 import NaoEncontrado from "../error/NaoEncontrado.js";
 
 class UserController {
   static listarUsers = async (req, res, next) => {
     try {
-      const listaUsers = await User.find();
+      const listaUsers = await UserServices.listarUsuarios();
       res.status(200).json(listaUsers);
     } catch (error) {
       next(error);
@@ -15,13 +14,10 @@ class UserController {
   static listarUserPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const userResultado = await User.findById(id);
+      const userResultado = await UserServices.bucarUsuarioPorId(id);
 
-      if (userResultado !== null) {
-        const pranchas = await Boards.find({ usuario: id }).select(
-          "id nome estilo litragem tamanho ondaMinima ondaMaxima descricao",
-        );
-        res.status(200).json({ ...userResultado.toObject(), boards: pranchas });
+      if (userResultado) {
+        res.status(200).json(userResultado);
       } else {
         next(new NaoEncontrado("User not found"));
       }
@@ -32,8 +28,7 @@ class UserController {
 
   static cadastratarUser = async (req, res, next) => {
     try {
-      const user = new User(req.body);
-      const userResultado = await user.save();
+      const userResultado = await UserServices.criarUser(req.body);
       res.status(201).json(userResultado);
     } catch (error) {
       next(error);
@@ -43,11 +38,7 @@ class UserController {
   static atualizarUser = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const userResultado = await User.findByIdAndUpdate(
-        id,
-        { $set: req.body },
-        { new: true },
-      );
+      const userResultado = await UserServices.atualizarUser(id, req.body);
       if (userResultado !== null) {
         res.status(200).json({ message: "User updated", data: userResultado });
       } else {
@@ -61,7 +52,7 @@ class UserController {
   static excluirUser = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const userResultado = await User.findByIdAndDelete(id);
+      const userResultado = await UserServices.excluirUser(id);
       if (userResultado !== null) {
         res.status(200).json({ message: "User deleted" });
       } else {

@@ -28,7 +28,7 @@ class BoardController {
   static adicionarBoard = async (req, res, next) => {
     try {
       const boardResultado = await BoardService.criarBoard(req.body);
-      res.status(201).send(boardResultado.toJSON());
+      res.status(201).json(boardResultado);
     } catch (error) {
       next(error);
     }
@@ -68,30 +68,20 @@ class BoardController {
 
   static recomendarBoard = async (req, res, next) => {
     try {
-      const { altura } = req.query;
-      if (!altura) {
+      const { altura, usuarioId } = req.query;
+      if (!altura || !usuarioId) {
         return res
           .status(400)
-          .send({ message: "Please provide the sea level." });
+          .send({ message: "Please provide height and User ID." });
       }
 
       const alturaMar = parseFloat(altura);
+      const boardSugeridas = await BoardService.gerarRecomendacaoPersonalizada(usuarioId, alturaMar);
 
-      const boardSugeridas = await BoardService.buscarPorAltura(alturaMar);
-
-      if (boardSugeridas.length > 0) {
-        res.status(200).json({
-          message: `Your recommended boards for sea level ${altura} m`,
-          sugestoes: boardSugeridas.map((board) => {
-            return {
-              id: board._id,
-              nome: board.nome,
-              estilo: board.estilo,
-            };
-          }),
-        });
+      if (boardSugeridas) {
+        res.status(200).json(boardSugeridas)
       } else {
-        next(new NaoEncontrado("No boards found for the given sea level."));
+        next(new NaoEncontrado("User not found or no boards match the conditions."));
       }
     } catch (error) {
       next(error);
