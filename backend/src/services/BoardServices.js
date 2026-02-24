@@ -31,15 +31,40 @@ class BoardService {
     }
 
     //Fator de litragem baseado no nível de habilidade do usuário
-    const fatores = {
-      beginner: 0.5,
-      intermediate: 0.4,
-      advanced: 0.35,
-      pro: 0.33,
+    const matrizLitragem = {
+      pro: {
+        shortboard: 0.33,
+        fish: 0.42,
+        funboard: 0.48,
+        longboard: 1.05,
+        gun: 0.35,
+        softboard: 0.5,
+      },
+      advanced: {
+        shortboard: 0.36,
+        fish: 0.44,
+        funboard: 0.52,
+        longboard: 1.15,
+        gun: 0.38,
+        softboard: 0.55,
+      },
+      intermediate: {
+        shortboard: 0.42,
+        fish: 0.48,
+        funboard: 0.58,
+        longboard: 1.3,
+        gun: 0.44,
+        softboard: 0.65,
+      },
+      beginner: {
+        shortboard: 0.5,
+        fish: 0.55,
+        funboard: 0.65,
+        longboard: 1.45,
+        gun: 0.5,
+        softboard: 0.75,
+      },
     };
-
-    const fatorIdeal = fatores[usuario.nivel];
-    const litragemAlvo = fatorIdeal * usuario.peso;
 
     const prancha = await Board.find({
       usuario: usuarioId,
@@ -47,29 +72,38 @@ class BoardService {
       ondaMaxima: { $gte: alturaMar },
     });
 
-    const recomendadasPorLitragem = prancha.filter((board) => {
-      return (
-        board.litragem >= litragemAlvo * 0.9 &&
-        board.litragem <= litragemAlvo * 1.1
-      );
-    });
-
-    const recomendacoesFinais = recomendadasPorLitragem.filter((board) => {
+    const recomendacoesFinais = prancha.filter((board) => {
       const estilo = board.estilo.toLowerCase();
+      const nivel = usuario.nivel.toLowerCase();
+
+      const fatorDoNivel = matrizLitragem[nivel] || matrizLitragem.intermediate;
+      const fatorAplicado = fatorDoNivel[estilo] || fatorDoNivel.shortboard;
+
+      const litragemAlvo = fatorAplicado * usuario.peso;
+
+      const recomendadasPorLitragem =
+        board.litragem >= litragemAlvo * 0.9 &&
+        board.litragem <= litragemAlvo * 1.1;
+
+      if (!recomendadasPorLitragem) {
+        return false;
+      }
+
+      //--- LOGS DE TERMINAL ---
+      console.log(`\n> Analisando: ${board.nome} (${estilo.toUpperCase()})`);
+      console.log(
+        `  Litragem: ${board.litragem}L | Alvo p/ Estilo: ${litragemAlvo.toFixed(1)}L`,
+      );
+      console.log(
+        `  Status Litragem: ${recomendadasPorLitragem ? "✅ OK" : "❌ FORA DA MARGEM"}`,
+      );
 
       if (alturaMar >= 1.5) {
-        const estilosProibidos = ["longboard", "funboard", "softboard"];
-        return !estilosProibidos.includes(estilo);
-      }
-
-      if (alturaMar <= 0.5) {
-        const estilosProibidos = ["gun", "shortboard"];
-        return !estilosProibidos.includes(estilo);
-      }
-
-      if (alturaMar > 0.5 && alturaMar < 1.5) {
-        const estilosProibidos = ["gun", "softboard"];
-        return !estilosProibidos.includes(estilo);
+        return !["longboard", "funboard", "softboard"].includes(estilo);
+      } else if (alturaMar <= 0.5) {
+        return !["gun", "shortboard"].includes(estilo);
+      } else if (alturaMar > 0.5 && alturaMar < 1.5) {
+        return !["gun", "softboard"].includes(estilo);
       }
 
       return true;
@@ -79,7 +113,6 @@ class BoardService {
       surfista: usuario.nome,
       nivel: usuario.nivel,
       peso: usuario.peso,
-      litragemIdeal: litragemAlvo.toFixed(1),
       condicaoMar: `${alturaMar}m`,
       suggestions: recomendacoesFinais,
     };

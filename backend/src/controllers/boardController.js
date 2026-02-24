@@ -72,7 +72,7 @@ class BoardController {
       if (!altura || !usuarioId) {
         return res
           .status(400)
-          .send({ message: "Please provide height and User ID." });
+          .json({ message: "Please provide height and User ID." });
       }
 
       const alturaMar = parseFloat(altura);
