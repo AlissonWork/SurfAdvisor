@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import Boards from "../models/Board.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 class UserServices {
   static listarUsuarios = async () => {
@@ -29,11 +31,36 @@ class UserServices {
   };
 
   static atualizarUser = async (id, dados) => {
-    return await User.findByIdAndUpdate(id, {$set: dados}, {new: true});
+    return await User.findByIdAndUpdate(id, { $set: dados }, { new: true });
   };
 
   static excluirUser = async (id) => {
     return await User.findByIdAndDelete(id);
+  };
+
+  static autenticar = async (email, password) => {
+    const usuario = await User.findOne({ email: email }).select("+password");
+
+    if (!usuario) {
+      return null;
+    }
+
+    const senhaValida = await bcrypt.compare(password, usuario.password);
+
+    if (!senhaValida) {
+      return null;
+    }
+
+    const token = jwt.sign(
+      {
+        id: usuario._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      },
+    );
+    return token;
   };
 }
 

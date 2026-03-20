@@ -12,6 +12,7 @@ function manipuladorDeErros(erro, req, res, next) {
   }else if (erro instanceof ErroBase) {
     erro.enviarResposta(res);
   } else {
+    console.error("ERRO REAL AQUI:", erro);
     new ErroBase().enviarResposta(res);
   }
 }

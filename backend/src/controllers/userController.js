@@ -1,5 +1,7 @@
 import UserServices from "../services/UserServices.js";
 import NaoEncontrado from "../error/NaoEncontrado.js";
+import RequisicaoIncorreta from "../error/RequisicaoIncorreta.js";
+import ErroBase from "../error/ErroBase.js";
 
 class UserController {
   static listarUsers = async (req, res, next) => {
@@ -62,6 +64,27 @@ class UserController {
       next(error);
     }
   };
+
+  static login = async (req, res, next) => {
+    try {
+      const {email, password} = req.body;
+
+      if (!email || !password) {
+        return next(new RequisicaoIncorreta("Email and password are required"));
+      }
+
+      const token = await UserServices.autenticar(email, password);
+
+      if(!token) {
+        return next(new ErroBase("Invalid email or password", 401));
+      }else {
+        res.status(200).json({ token });
+      }
+
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default UserController;
