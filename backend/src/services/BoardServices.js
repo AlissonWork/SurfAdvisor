@@ -117,6 +117,11 @@ class BoardService {
       suggestions: recomendacoesFinais,
     };
   };
+
+  static buscarPorUsuario = async (idUsuario) => {
+    const boards = await Board.find({usuario: idUsuario});
+    return boards;
+  }
 }
 
 export default BoardService;
