@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import  ErroBase  from "../error/ErroBase.js";
+import ErroBase from "../error/ErroBase.js";
 
 function verificarToken(req, res, next) {
   const authHeader = req.headers.authorization;

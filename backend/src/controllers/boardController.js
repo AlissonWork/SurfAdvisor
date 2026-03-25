@@ -1,6 +1,7 @@
 import BoardService from "../services/BoardServices.js";
 import NaoEncontrado from "../error/NaoEncontrado.js";
 import ErroBase from "../error/ErroBase.js";
+import WeatherService from "../services/WeatherService.js";
 
 class BoardController {
   static listarBoards = async (req, res, next) => {
@@ -23,14 +24,13 @@ class BoardController {
         return next(new NaoEncontrado("Board not found."));
       }
 
-      if(board.usuario._id.toString() !== idUsuarioLogado) {
+      if (board.usuario._id.toString() !== idUsuarioLogado) {
         return next(
           new ErroBase("You don't have permission to view this board.", 403),
         );
       }
-      
-        res.status(200).json(board);
-      
+
+      res.status(200).json(board);
     } catch (error) {
       next(error);
     }
@@ -45,7 +45,7 @@ class BoardController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   static adicionarBoard = async (req, res, next) => {
     try {
@@ -110,20 +110,24 @@ class BoardController {
 
   static recomendarBoard = async (req, res, next) => {
     try {
-      const { altura, usuarioId } = req.query;
-      if (!altura || !usuarioId) {
-        return res
-          .status(400)
-          .json({ message: "Please provide height and User ID." });
+      const { pico } = req.query;
+      const idUsuarioLogado = req.user.id;
+
+      if (!pico) {
+        return res.status(400).json({ message: "Please provide pico key." });
       }
 
-      const alturaMar = parseFloat(altura);
+      const dadosMar = await WeatherService.obterAlturaOnda(pico);
+      console.log(
+        `Consulta: ${dadosMar.pico} | Altura atual: ${dadosMar.altura}m`,
+      );
       const boardSugeridas = await BoardService.gerarRecomendacaoPersonalizada(
-        usuarioId,
-        alturaMar,
+        idUsuarioLogado,
+        dadosMar.altura,
       );
 
       if (boardSugeridas) {
+        boardSugeridas.local = dadosMar.pico;
         res.status(200).json(boardSugeridas);
       } else {
         next(

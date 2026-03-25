@@ -28,7 +28,7 @@ class UserController {
     }
   };
 
-  static cadastratarUser = async (req, res, next) => {
+  static cadastrarUser = async (req, res, next) => {
     try {
       const userResultado = await UserServices.criarUser(req.body);
       res.status(201).json(userResultado);
