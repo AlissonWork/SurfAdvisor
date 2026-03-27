@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import "dotenv/config";
 import routes from "./src/routes/index.js";
 
@@ -11,6 +12,8 @@ mongoose
   .catch((error) => console.error("Erro ao conectar", error));
 
 const app = express();
+
+app.use(cors());
 
 routes(app);
 

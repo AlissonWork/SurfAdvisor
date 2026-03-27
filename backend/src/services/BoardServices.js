@@ -3,11 +3,11 @@ import User from "../models/User.js";
 
 class BoardService {
   static listarTudo = async () => {
-    return await Board.find();
+    return await Board.find().populate("usuario","nome").select("-__v").exec();
   };
 
   static buscarPorId = async (id) => {
-    return await Board.findById(id).populate("usuario", "nome").exec();
+    return await Board.findById(id).populate("usuario", "nome").select("-__v").exec();
   };
 
   static criarBoard = async (dados) => {
@@ -16,15 +16,15 @@ class BoardService {
   };
 
   static atualizar = async (id, dados) => {
-    return await Board.findByIdAndUpdate(id, { $set: dados }, { new: true });
+    return await Board.findByIdAndUpdate(id, { $set: dados }, { new: true }).select("-__v");
   };
 
   static excluir = async (id) => {
-    return await Board.findByIdAndDelete(id);
+    return await Board.findByIdAndDelete(id).select("-__v");
   };
 
   static gerarRecomendacaoPersonalizada = async (usuarioId, alturaMar) => {
-    const usuario = await User.findById(usuarioId);
+    const usuario = await User.findById(usuarioId).select("-__v");
 
     if (!usuario) {
       return null;
@@ -119,7 +119,7 @@ class BoardService {
   };
 
   static buscarPorUsuario = async (idUsuario) => {
-    const boards = await Board.find({usuario: idUsuario});
+    const boards = await Board.find({usuario: idUsuario}).select("-__v");
     return boards;
   }
 }
