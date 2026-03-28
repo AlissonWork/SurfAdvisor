@@ -11,6 +11,8 @@ const routes = (app) => {
 
   app.use(express.json(), boards, user);
 
+  app.use("/uploads", express.static("uploads"));
+
   app.use(manipulador404);
 
   app.use(manipuladorDeErros);

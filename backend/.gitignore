@@ -1,2 +1,7 @@
 .env
 node_modules
+
+# Ignora todas as imagens do Multer
+uploads/*
+# Mas não ignora o arquivo .gitkeep (para a pasta continuar existindo)
+!uploads/.gitkeep

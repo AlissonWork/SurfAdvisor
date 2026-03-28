@@ -3,11 +3,14 @@ import User from "../models/User.js";
 
 class BoardService {
   static listarTudo = async () => {
-    return await Board.find().populate("usuario","nome").select("-__v").exec();
+    return await Board.find().populate("usuario", "nome").select("-__v").exec();
   };
 
   static buscarPorId = async (id) => {
-    return await Board.findById(id).populate("usuario", "nome").select("-__v").exec();
+    return await Board.findById(id)
+      .populate("usuario", "nome")
+      .select("-__v")
+      .exec();
   };
 
   static criarBoard = async (dados) => {
@@ -16,7 +19,11 @@ class BoardService {
   };
 
   static atualizar = async (id, dados) => {
-    return await Board.findByIdAndUpdate(id, { $set: dados }, { new: true }).select("-__v");
+    return await Board.findByIdAndUpdate(
+      id,
+      { $set: dados },
+      { new: true },
+    ).select("-__v");
   };
 
   static excluir = async (id) => {
@@ -119,9 +126,9 @@ class BoardService {
   };
 
   static buscarPorUsuario = async (idUsuario) => {
-    const boards = await Board.find({usuario: idUsuario}).select("-__v");
+    const boards = await Board.find({ usuario: idUsuario }).select("-__v");
     return boards;
-  }
+  };
 }
 
 export default BoardService;

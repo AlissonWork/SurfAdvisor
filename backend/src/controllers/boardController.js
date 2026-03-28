@@ -51,6 +51,7 @@ class BoardController {
     try {
       const dadosPrancha = req.body;
       dadosPrancha.usuario = req.user.id; // Atribui o ID do usuário autenticado
+      dadosPrancha.imagem = req.file ? req.file.path : null; // Atribui o caminho da imagem se houver upload
       const boardResultado = await BoardService.criarBoard(dadosPrancha);
       res.status(201).json(boardResultado);
     } catch (error) {
