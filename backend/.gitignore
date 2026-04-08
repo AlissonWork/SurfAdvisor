@@ -1,5 +1,6 @@
 .env
 node_modules
+seed.js
 
 # Ignora todas as imagens do Multer
 uploads/*

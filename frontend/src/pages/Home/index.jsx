@@ -1,81 +1,98 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
+import Navbar from "../../components/Navbar";
+import StatCard from "../../components/StatCard";
+import BoardCard from "../../components/BoardCard";
+import IconPlus from "../../components/IconPlus";
+import IconDroplet from "../../components/IconDroplet";
+import EmptyState from "../../components/EmptyState";
+import IconBoard from "../../components/IconBoard";
+import IconWave from "../../components/IconWave";
 
 function Home() {
   const [pranchas, setPranchas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function buscarPranchas() {
       try {
-        const response = await api.get("/boards");
+        const response = await api.get("/boards/usuario");
         setPranchas(response.data);
       } catch (erro) {
         console.error("Erro ao buscar pranchas:", erro);
+      } finally {
+        setLoading(false);
       }
     }
     buscarPranchas();
   }, []);
 
+  // Calcular estatisticas
+  const totalPranchas = pranchas.length;
+  const totalLitragem = pranchas.reduce((acc, p) => acc + (p.litragem || 0), 0);
+  const estilosUnicos = [...new Set(pranchas.map((p) => p.estilo))].length;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 p-6 md:p-10">
-      <header className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-          Surf<span className="text-cyan-400">Advisor</span>
-        </h1>
-        <p className="mt-2 text-slate-400 text-lg">
-          Todas as pranchas cadastradas no sistema.
-        </p>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950">
+      <Navbar />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {pranchas.map((prancha) => (
-          <div
-            key={prancha._id}
-            className="group bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300"
-          >
-            {prancha.imagem && (
-              <div className="overflow-hidden">
-                <img
-                  src={`http://localhost:3000/${prancha.imagem}`}
-                  alt={prancha.nome}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-            )}
-
-            <div className="p-5">
-              <h2 className="text-xl font-semibold text-white mb-3">
-                {prancha.nome}
-              </h2>
-              
-              <span className="inline-block px-3 py-1 text-sm font-medium bg-cyan-500/20 text-cyan-400 rounded-full mb-3">
-                {prancha.estilo}
-              </span>
-              
-              <div className="flex items-center gap-4 text-slate-400 text-sm">
-                <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                  {prancha.tamanho}
+      <main className="p-6 md:p-10 max-w-7xl mx-auto">
+        
+        {/* Cabecalho */}
+        <header className="mb-10">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8">
+            <div>
+              <p className="text-cyan-400 text-sm font-medium uppercase tracking-widest mb-2">
+                Board Manager
+              </p>
+              <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                My{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400">
+                  Quiver
                 </span>
-                <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                  </svg>
-                  {prancha.litragem}L
-                </span>
-              </div>
+              </h1>
             </div>
-          </div>
-        ))}
-      </div>
 
-      {pranchas.length === 0 && (
-        <div className="text-center py-20">
-          <p className="text-slate-500 text-lg">Nenhuma prancha encontrada.</p>
-        </div>
-      )}
+            <button className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-900 font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:-translate-y-0.5">
+              <IconPlus />
+              New Board
+            </button>
+          </div>
+
+          {/* Cards de Estatisticas */}
+          {totalPranchas > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard icon={<IconBoard />} label="Boards" value={totalPranchas} />
+              <StatCard icon={<IconDroplet />} label="Total Volume" value={`${totalLitragem}L`} />
+              <StatCard icon={<IconWave />} label="Styles" value={estilosUnicos} />
+            </div>
+          )}
+        </header>
+
+        {/* Conteudo Principal */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden animate-pulse">
+                <div className="w-full h-56 bg-slate-700/50" />
+                <div className="p-5 space-y-3">
+                  <div className="h-6 bg-slate-700/50 rounded w-3/4" />
+                  <div className="h-4 bg-slate-700/50 rounded w-1/4" />
+                  <div className="h-4 bg-slate-700/50 rounded w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : pranchas.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {pranchas.map((prancha) => (
+              <BoardCard key={prancha._id} prancha={prancha} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState />
+        )}
+      </main>
     </div>
   );
 }
