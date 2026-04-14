@@ -15,17 +15,19 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    async function buscarPranchas() {
-      try {
-        const response = await api.get("/boards/usuario");
-        setPranchas(response.data);
-      } catch (erro) {
-        console.error("Erro ao buscar pranchas:", erro);
-      } finally {
-        setLoading(false);
-      }
+  async function buscarPranchas() {
+    setLoading(true);
+    try {
+      const response = await api.get("/boards/usuario");
+      setPranchas(response.data);
+    } catch (erro) {
+      console.error("Erro ao buscar pranchas:", erro);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     buscarPranchas();
   }, []);
 
@@ -54,7 +56,10 @@ function Home() {
               </h1>
             </div>
 
-            <button onClick={() => setIsModalOpen(true)} className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-900 font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:-translate-y-0.5">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-900 font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:-translate-y-0.5"
+            >
               <IconPlus />
               New Board
             </button>
@@ -102,17 +107,21 @@ function Home() {
         ) : pranchas.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {pranchas.map((prancha) => (
-              <BoardCard key={prancha._id} prancha={prancha} />
+              <BoardCard
+                key={prancha._id}
+                prancha={prancha}
+                onDeleteSuccess={buscarPranchas}
+              />
             ))}
           </div>
         ) : (
           <EmptyState />
         )}
 
-      <AddBoardModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+        <AddBoardModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </main>
     </div>
   );

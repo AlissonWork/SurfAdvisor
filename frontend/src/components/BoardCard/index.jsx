@@ -1,7 +1,21 @@
 import IconRuler from "../IconRuler";
 import IconDroplet from "../IconDroplet";
+import IconTrash from "../IconTrash";
+import api from "../../services/api";
 
-export default function BoardCard({ prancha }) {
+export default function BoardCard({ prancha, onDeleteSuccess }) {
+  async function handleDelete(){
+    const confirmacao = window.confirm(`Are you want to delete the board? "${prancha.nome}"?`);
+    if (!confirmacao) return;
+    try {
+      await api.delete("/boards/" + prancha._id)
+      onDeleteSuccess();
+      
+    } catch (erro) {
+      console.error("Error deleting surfboard:", erro);
+    }
+  }
+
   return (
     <div className="group bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl shadow-black/10 hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-500/30 hover:-translate-y-1 transition-all duration-300">
       {prancha.imagem && (
@@ -38,6 +52,13 @@ export default function BoardCard({ prancha }) {
             <IconDroplet />
             {prancha.litragem}L
           </span>
+          <button 
+            onClick={handleDelete}
+            className="ml-auto flex items-center gap-1.5 text-slate-500 hover:text-red-400 transition-colors p-1 rounded-md hover:bg-red-400/10"
+            title="Apagar prancha"
+          >
+            <IconTrash />
+          </button>
         </div>
       </div>
     </div>
