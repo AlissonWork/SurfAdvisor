@@ -11,7 +11,7 @@ router
   .get("/boards/recomendacao", verificarToken, BoardController.recomendarBoard)
   .get("/boards/:id", verificarToken, BoardController.buscarBoardPorId)
   .post("/boards", verificarToken, uploadMulter, BoardController.adicionarBoard)
-  .put("/boards/:id", verificarToken, BoardController.atualizarBoard)
+  .put("/boards/:id", verificarToken, uploadMulter, BoardController.atualizarBoard)
   .delete("/boards/:id", verificarToken, BoardController.excluirBoard);
 
 export default router;

@@ -2,15 +2,36 @@ import IconRuler from "../IconRuler";
 import IconDroplet from "../IconDroplet";
 import IconTrash from "../IconTrash";
 import api from "../../services/api";
+import { useState } from "react";
+import AddBoardModal from "../AddBoardModal";
+
+const IconEdit = () => (
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+    />
+  </svg>
+);
 
 export default function BoardCard({ prancha, onDeleteSuccess }) {
-  async function handleDelete(){
-    const confirmacao = window.confirm(`Are you want to delete the board? "${prancha.nome}"?`);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  async function handleDelete() {
+    const confirmacao = window.confirm(
+      `Are you want to delete the board? "${prancha.nome}"?`,
+    );
     if (!confirmacao) return;
     try {
-      await api.delete("/boards/" + prancha._id)
+      await api.delete("/boards/" + prancha._id);
       onDeleteSuccess();
-      
     } catch (erro) {
       console.error("Error deleting surfboard:", erro);
     }
@@ -52,15 +73,32 @@ export default function BoardCard({ prancha, onDeleteSuccess }) {
             <IconDroplet />
             {prancha.litragem}L
           </span>
-          <button 
-            onClick={handleDelete}
-            className="ml-auto flex items-center gap-1.5 text-slate-500 hover:text-red-400 transition-colors p-1 rounded-md hover:bg-red-400/10"
-            title="Apagar prancha"
-          >
-            <IconTrash />
-          </button>
+
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="text-slate-500 hover:text-cyan-400 transition-colors p-1.5 rounded-md hover:bg-cyan-400/10"
+              title="Edit board"
+            >
+              <IconEdit />
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="text-slate-500 hover:text-red-400 transition-colors p-1.5 rounded-md hover:bg-red-400/10"
+              title="Delete board"
+            >
+              <IconTrash />
+            </button>
+          </div>
         </div>
       </div>
+      <AddBoardModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        prancha={prancha}
+        onBoardAdded={onDeleteSuccess} // Reutilizamos a mesma função de atualizar a Home!
+      />
     </div>
   );
 }

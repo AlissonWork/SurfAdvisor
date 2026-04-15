@@ -1,20 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import api from "../../services/api";
 import IconClose from "../IconClose";
 import IconUpload from "../IconUpload";
 import IconSurfboard from "../IconSurfboard";
 import IconChevronDown from "../IconChevronDown";
 
-
 // Board sizes list
 const BOARD_SIZES = [
-  "5'0\"", "5'2\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"",
-  "6'0\"", "6'1\"", "6'2\"", "6'3\"", "6'4\"", "6'5\"", "6'6\"", "6'8\"", "6'10\"",
-  "7'0\"", "7'2\"", "7'4\"", "7'6\"", "7'8\"", "7'10\"",
-  "8'0\"", "8'6\"",
-  "9'0\"", "9'2\"", "9'4\"", "9'6\"",
-  "10'0\"", "10'6\"",
-  "11'0\""
+  "5'0\"",
+  "5'2\"",
+  "5'4\"",
+  "5'5\"",
+  "5'6\"",
+  "5'7\"",
+  "5'8\"",
+  "5'9\"",
+  "5'10\"",
+  "5'11\"",
+  "6'0\"",
+  "6'1\"",
+  "6'2\"",
+  "6'3\"",
+  "6'4\"",
+  "6'5\"",
+  "6'6\"",
+  "6'8\"",
+  "6'10\"",
+  "7'0\"",
+  "7'2\"",
+  "7'4\"",
+  "7'6\"",
+  "7'8\"",
+  "7'10\"",
+  "8'0\"",
+  "8'6\"",
+  "9'0\"",
+  "9'2\"",
+  "9'4\"",
+  "9'6\"",
+  "10'0\"",
+  "10'6\"",
+  "11'0\"",
 ];
 
 // Board styles list
@@ -27,7 +54,12 @@ const BOARD_STYLES = [
   { value: "softboard", label: "Softboard" },
 ];
 
-export default function AddBoardModal({ isOpen, onClose }) {
+export default function AddBoardModal({
+  isOpen,
+  onClose,
+  onBoardAdded,
+  prancha,
+}) {
   const [nome, setNome] = useState("");
   const [estilo, setEstilo] = useState("shortboard");
   const [litragem, setLitragem] = useState("");
@@ -38,10 +70,48 @@ export default function AddBoardModal({ isOpen, onClose }) {
   const [imagem, setImagem] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const ehEdicao = !!prancha;
+
+  // Preenche os campos automaticamente quando a janela abre em modo Edição
+  useEffect(() => {
+    if (isOpen) {
+      if (ehEdicao) {
+        setNome(prancha.nome || "");
+        setEstilo(prancha.estilo || "shortboard");
+        setLitragem(prancha.litragem || "");
+        setTamanho(prancha.tamanho || "");
+        setOndaMinima(prancha.ondaMinima || "");
+        setOndaMaxima(prancha.ondaMaxima || "");
+        setDescricao(prancha.descricao || "");
+        setImagem(null);
+      } else {
+        setNome("");
+        setEstilo("shortboard");
+        setLitragem("");
+        setTamanho("");
+        setOndaMinima("");
+        setOndaMaxima("");
+        setDescricao("");
+        setImagem(null);
+      }
+    }
+  }, [isOpen, prancha, ehEdicao]);
+
   if (!isOpen) return null;
 
   async function handleAddBoard(e) {
     e.preventDefault();
+
+    if (!ehEdicao && !imagem) {
+      alert("Please select an image for the board.");
+      return;
+    }
+
+    if (!tamanho) {
+      alert("Please select the board size.");
+      return;
+    }
+
     setLoading(true);
 
     const dadosParaEnviar = new FormData();
@@ -58,29 +128,39 @@ export default function AddBoardModal({ isOpen, onClose }) {
     }
 
     try {
-      await api.post("/boards", dadosParaEnviar, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      alert("Board added successfully!");
-      setNome(""); setLitragem(""); setTamanho(""); setOndaMinima(""); setOndaMaxima(""); setDescricao(""); setImagem(null);
+      if (ehEdicao) {
+        await api.put(`/boards/${prancha._id}`, dadosParaEnviar, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        alert("Board updated successfully!");
+      } else {
+        await api.post("/boards", dadosParaEnviar, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        alert("Board added successfully!");
+      }
+
+      if (onBoardAdded) onBoardAdded();
       onClose();
     } catch (erro) {
       console.error("Error during registration:", erro);
-      const mensagemErro = erro.response?.data?.message || "Error registering board. Please try again.";
+      const mensagemErro =
+        erro.response?.data?.message ||
+        "Error registering board. Please try again.";
       alert(mensagemErro);
     } finally {
       setLoading(false);
     }
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
       <form
         onSubmit={handleAddBoard}
         className="bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700/50 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50 scrollbar-hide"
         style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
         {/* Header */}
@@ -110,7 +190,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
           {/* Name and Style */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Board Name</label>
+              <label className="block text-sm font-medium text-slate-300">
+                Board Name
+              </label>
               <input
                 required
                 type="text"
@@ -121,7 +203,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Style</label>
+              <label className="block text-sm font-medium text-slate-300">
+                Style
+              </label>
               <div className="relative">
                 <select
                   value={estilo}
@@ -129,7 +213,11 @@ export default function AddBoardModal({ isOpen, onClose }) {
                   className="w-full bg-slate-900/50 border border-slate-600/50 rounded-xl px-4 py-3 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all appearance-none cursor-pointer"
                 >
                   {BOARD_STYLES.map((style) => (
-                    <option key={style.value} value={style.value} className="bg-slate-800 text-white">
+                    <option
+                      key={style.value}
+                      value={style.value}
+                      className="bg-slate-800 text-white"
+                    >
                       {style.label}
                     </option>
                   ))}
@@ -144,7 +232,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
           {/* Size and Volume */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Size</label>
+              <label className="block text-sm font-medium text-slate-300">
+                Size
+              </label>
               <div className="relative">
                 <select
                   required
@@ -152,9 +242,19 @@ export default function AddBoardModal({ isOpen, onClose }) {
                   onChange={(e) => setTamanho(e.target.value)}
                   className="w-full bg-slate-900/50 border border-slate-600/50 rounded-xl px-4 py-3 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all appearance-none cursor-pointer"
                 >
-                  <option value="" disabled className="bg-slate-800 text-slate-500">Select size</option>
+                  <option
+                    value=""
+                    disabled
+                    className="bg-slate-800 text-slate-500"
+                  >
+                    Select size
+                  </option>
                   {BOARD_SIZES.map((size) => (
-                    <option key={size} value={size} className="bg-slate-800 text-white">
+                    <option
+                      key={size}
+                      value={size}
+                      className="bg-slate-800 text-white"
+                    >
                       {size}
                     </option>
                   ))}
@@ -165,7 +265,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Volume (L)</label>
+              <label className="block text-sm font-medium text-slate-300">
+                Volume (L)
+              </label>
               <input
                 required
                 type="number"
@@ -180,10 +282,14 @@ export default function AddBoardModal({ isOpen, onClose }) {
 
           {/* Wave Range */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-3">Ideal Wave Range (meters)</label>
+            <label className="block text-sm font-medium text-slate-300 mb-3">
+              Ideal Wave Range (meters)
+            </label>
             <div className="grid grid-cols-2 gap-4">
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">Min</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
+                  Min
+                </span>
                 <input
                   required
                   type="number"
@@ -195,7 +301,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
                 />
               </div>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">Max</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
+                  Max
+                </span>
                 <input
                   required
                   type="number"
@@ -211,7 +319,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
 
           {/* Description */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-300">Description</label>
+            <label className="block text-sm font-medium text-slate-300">
+              Description
+            </label>
             <textarea
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
@@ -223,7 +333,9 @@ export default function AddBoardModal({ isOpen, onClose }) {
 
           {/* Image Upload */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-300">Image</label>
+            <label className="block text-sm font-medium text-slate-300">
+              Image
+            </label>
             <label className="flex flex-col items-center justify-center w-full h-32 bg-slate-900/30 border-2 border-dashed border-slate-600/50 rounded-xl cursor-pointer hover:border-cyan-500/50 hover:bg-slate-900/50 transition-all group">
               <div className="flex flex-col items-center justify-center text-slate-500 group-hover:text-cyan-400 transition-colors">
                 <IconUpload />
@@ -273,6 +385,7 @@ export default function AddBoardModal({ isOpen, onClose }) {
           -moz-appearance: textfield;
         }
       `}</style>
-    </div>
+    </div>,
+    document.body,
   );
 }

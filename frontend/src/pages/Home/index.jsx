@@ -121,6 +121,7 @@ function Home() {
         <AddBoardModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
+          onBoardAdded={buscarPranchas}
         />
       </main>
     </div>

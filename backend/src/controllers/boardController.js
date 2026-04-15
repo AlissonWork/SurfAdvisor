@@ -76,7 +76,13 @@ class BoardController {
         );
       }
 
-      const boardResultado = await BoardService.atualizar(idPrancha, req.body);
+      const dadosAtualizados = { ...req.body };
+
+      if (req.file) {
+        dadosAtualizados.imagem = req.file.path; // Atualiza o caminho da imagem se houver upload
+      }
+
+      const boardResultado = await BoardService.atualizar(idPrancha, dadosAtualizados);
 
       res.status(200).send({ message: "Updated board", data: boardResultado });
     } catch (error) {
