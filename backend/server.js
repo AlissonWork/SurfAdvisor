@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import "dotenv/config";
 import routes from "./src/routes/index.js";
+import dns from "node:dns/promises";
+
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,13 +1,15 @@
 import { useState } from "react";
 import api from "../../services/api";
+import AddBoardModal from "../AddBoardModal";
+import BoardDetailsModal from "../BoardDetailsModal";
 import IconRuler from "../IconRuler";
 import IconDroplet from "../IconDroplet";
 import IconTrash from "../IconTrash";
 import IconEdit from "../IconEdit";
-import AddBoardModal from "../AddBoardModal";
 
 export default function BoardCard({ prancha, onDeleteSuccess }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   async function handleDelete() {
     const confirmacao = window.confirm(
@@ -23,7 +25,9 @@ export default function BoardCard({ prancha, onDeleteSuccess }) {
   }
 
   return (
-    <div className="group bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl shadow-black/10 hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-500/30 hover:-translate-y-1 transition-all duration-300">
+    <div 
+    onClick={() => setIsDetailsModalOpen(true)}
+    className="group bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl shadow-black/10 hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-500/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
       {prancha.imagem && (
         <div className="relative overflow-hidden">
           <img
@@ -83,6 +87,12 @@ export default function BoardCard({ prancha, onDeleteSuccess }) {
         onClose={() => setIsEditModalOpen(false)}
         prancha={prancha}
         onBoardAdded={onDeleteSuccess} // Reutilizamos a mesma função de atualizar a Home!
+      />
+
+      <BoardDetailsModal 
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        prancha={prancha}
       />
     </div>
   );
