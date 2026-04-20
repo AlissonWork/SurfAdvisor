@@ -1,13 +1,20 @@
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import logoImg from "../../assets/logo.png"; 
+import api from "../../services/api";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleLogout() {
-    localStorage.removeItem("surfadvisor_token");
-    navigate("/login");
+  async function handleLogout() {
+    try {
+      
+      await api.post("/users/logout");
+      localStorage.removeItem("isLoggedIn");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   }
 
   return (

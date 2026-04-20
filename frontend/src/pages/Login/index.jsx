@@ -12,15 +12,13 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await api.post("/users/login", {
+      await api.post("/users/login", {
         email,
         password 
-      });
+      })
 
-      const token = response.data.token;
-      localStorage.setItem("surfadvisor_token", token);
-      
-      api.defaults.headers.Authorization = `Bearer ${token}`;
+      // Cria a flag (O Crachá) dizendo que estamos logados!
+      localStorage.setItem("isLoggedIn", "true");
       
       navigate("/home");
 

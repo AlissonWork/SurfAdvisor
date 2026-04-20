@@ -78,13 +78,30 @@ class UserController {
       if(!token) {
         return next(new ErroBase("Invalid email or password", 401));
       }else {
-        res.status(200).json({ token });
+        res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Requer HTTPS em produção
+        sameSite: "strict", // Protege contra CSRF
+        maxAge: 1200000  // 20 min em milissegundos 
+      });
+
+      // Respondemos com sucesso, MAS SEM o token no JSON!
+      res.status(200).json({ message: "Login successful" });
       }
 
     } catch (error) {
       next(error);
     }
-  }
+  };
+
+  static logout = async (req, res) => {
+    res.clearCookie("token", {
+      httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
+    });
+    res.status(200).json({ message: "Logout successful!!" });
+  };
 }
 
 export default UserController;

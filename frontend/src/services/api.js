@@ -1,17 +1,19 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/',
+  baseURL: "http://localhost:3000",
+  withCredentials: true, //Permite o envio automático de cookies!
 });
 
-api.interceptors.request.use(async config => {
-  const token = localStorage.getItem("surfadvisor_token");
-
-  if(token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+  (response) => response,
+  (error) => {
+    if(error.response && error.response.status === 401) {
+      localStorage.removeItem("isLoggedIn"); // Destrói a flag
+      window.location.href = "/login"; // Chuta para a tela inicial
+    }
   }
 
-  return config;
-})
+)
 
 export default api;

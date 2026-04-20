@@ -1,25 +1,21 @@
 import jwt from "jsonwebtoken";
 import ErroBase from "../error/ErroBase.js";
 
-function verificarToken(req, res, next) {
-  const authHeader = req.headers.authorization;
+const verificarToken = (req, res, next) => {
 
-  if (!authHeader) {
-    return next(new ErroBase("Token not provided.", 401));
+  const token = req.cookies.token;
+
+  if(!token) {
+    return next(new ErroBase("No token provided.", 401));
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
-    jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
-      if (error) {
-        return next(new ErroBase("Invalid token.", 401));
-      }
-      req.user = user;
-      next();
-    });
+    const decodificado = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = { id: decodificado.id };
+      return next();
+    
   } catch {
-    next(new ErroBase("Token verification failed.", 401));
+    return next(new ErroBase("Token verification failed.", 401));
   }
 }
 
