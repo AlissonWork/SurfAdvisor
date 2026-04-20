@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logoImg from "../../assets/logo.png";
 import api from "../../services/api";
 
 export default function Login() {
@@ -34,8 +35,8 @@ export default function Login() {
       <div className="bg-slate-800/80 backdrop-blur-md border border-slate-700 p-8 rounded-2xl shadow-2xl w-full max-w-md">
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
-            Welcome to <br/><span className="text-cyan-400">SurfAdvisor</span>
+          <h1 className="text-3xl font-bold text-white tracking-tight mb-2 p-4">
+            <span className="text-cyan-400">Welcome to</span> <br/><img src={logoImg} alt="logo" />
           </h1>
           <p className="text-slate-400">Sign in to manage your quiver.</p>
         </div>

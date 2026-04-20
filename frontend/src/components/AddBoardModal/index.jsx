@@ -102,11 +102,6 @@ export default function AddBoardModal({
   async function handleAddBoard(e) {
     e.preventDefault();
 
-    if (!ehEdicao && !imagem) {
-      alert("Please select an image for the board.");
-      return;
-    }
-
     if (!tamanho) {
       alert("Please select the board size.");
       return;
