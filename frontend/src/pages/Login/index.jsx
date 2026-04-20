@@ -21,10 +21,8 @@ export default function Login() {
       localStorage.setItem("surfadvisor_token", token);
       
       api.defaults.headers.Authorization = `Bearer ${token}`;
-
-      alert("Login successful! 🌊");
       
-      navigate("/");
+      navigate("/home");
 
     } catch (error) {
       console.error("Login error:", error);

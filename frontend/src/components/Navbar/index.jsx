@@ -30,9 +30,9 @@ export default function Navbar() {
       {/* 2. Menu de Navegacao Central */}
       <div className="hidden md:flex items-center gap-1 bg-slate-800/50 p-1.5 rounded-full border border-slate-700/50">
         <Link 
-          to="/" 
+          to="/home" 
           className={`px-5 py-2 rounded-full font-medium text-sm transition-all duration-300 ${
-            location.pathname === "/" 
+            location.pathname === "/home" 
               ? "bg-cyan-500 text-slate-900 shadow-lg shadow-cyan-500/30" 
               : "text-slate-300 hover:text-white hover:bg-slate-700/50"
           }`}
