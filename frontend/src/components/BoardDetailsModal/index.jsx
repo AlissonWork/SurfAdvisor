@@ -30,7 +30,7 @@ export default function BoardDetailsModal({isOpen, onClose, prancha}) {
         <div className="w-full md:w-1/2 h-64 md:h-auto bg-slate-800/50 relative">
           {prancha.imagem ? (
             <img 
-              src={`http://localhost:3000/${prancha.imagem}`} 
+              src={`https://surfadvisor-api.onrender.com/${prancha.imagem}`} 
               alt={prancha.nome} 
               className="w-full h-full object-cover"
             />

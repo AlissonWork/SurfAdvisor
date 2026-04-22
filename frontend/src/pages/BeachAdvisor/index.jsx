@@ -168,7 +168,7 @@ export default function SmartMatch() {
                       <div className="w-20 h-24 sm:w-24 sm:h-28 flex-shrink-0 bg-slate-900 rounded-xl overflow-hidden relative border border-slate-700/50 group-hover:border-cyan-500/30 transition-colors">
                         {board.imagem ? (
                           <img
-                            src={`http://localhost:3000/${board.imagem}`}
+                            src={`https://surfadvisor-api.onrender.com/${board.imagem}`}
                             alt={board.nome}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
