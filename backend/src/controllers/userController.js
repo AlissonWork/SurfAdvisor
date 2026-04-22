@@ -81,7 +81,7 @@ class UserController {
         res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Requer HTTPS em produção
-        sameSite: "strict", // Protege contra CSRF
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', 
         maxAge: 1200000  // 20 min em milissegundos 
       });
 
