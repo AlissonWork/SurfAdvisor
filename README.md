@@ -1,31 +1,87 @@
-# 🏄‍♂️ SurfAdvisor (Full-Stack em Desenvolvimento 🚧)
+# 🏄‍♂️ SurfAdvisor
 
-> **Status do Projeto:** O projeto está evoluindo de uma API RESTful para uma aplicação Full-Stack completa. O núcleo do backend e o painel de gestão Front-end (MVP) já estão funcionais, com integrações robustas de UI e consumo de dados em tempo real.
+> **The Ultimate Surfer's Assistant.**
+> Manage your quiver, track statistics, and receive real-time recommendations for the ideal surfboard based on ocean conditions and your surfing level.
 
-O **SurfAdvisor** é o assistente definitivo de qualquer surfista. O sistema permite que o usuário gerencie o seu *quiver* (coleção de pranchas) de forma visual e inteligente e, utilizando dados oceanográficos em tempo real, recomenda a prancha ideal para o mar do dia com base no nível de habilidade e peso do surfista.
+[![Status](https://img.shields.io/badge/Status-In%20Production-success)]()
+[![Deploy](https://img.shields.io/badge/Deploy-Vercel%20%7C%20Render-blue)]()
+[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)]()
+[![Node](https://img.shields.io/badge/Node.js-43853D?style=flat&logo=node.js&logoColor=white)]()
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white)]()
 
-## 🚀 O que o projeto já faz (Features Atuais)
+🌍 **Access the live project:** [SurfAdvisor (Live App)](https://surf-advisor-black.vercel.app/)
 
-* **Gestão de Quiver Interativa (Front-end & API):** * **Dashboard Dinâmico (Read):** Visualização em grid responsivo dos *BoardCards*, com cálculo em tempo real de estatísticas do usuário (Total de pranchas, Volume acumulado, Variedade de estilos).
-  * **Modais Inteligentes (Create/Update):** Componentes "Transformer" que gerenciam tanto a criação quanto a edição de pranchas. Lida com envio de imagens e textos simultaneamente usando `FormData`.
-  * **Arquitetura Avançada de UI:** Utilização nativa de **React Portals** para renderização de modais, contornando limitações complexas de *Stacking Context* do CSS.
-  * **Segurança de UX (Delete):** Fluxo de remoção de pranchas com barreira de segurança contra deleções acidentais e sincronização de estado com o servidor.
-* **Autenticação e Segurança:** * Cadastro de usuários com criptografia de senha (`bcrypt`).
-  * Login seguro com geração de token (`JWT`).
-  * Rotas protegidas (Apenas donos podem editar, excluir ou visualizar suas próprias pranchas).
-* **Motor de Recomendação Inteligente:** * Integração com a API externa **Open-Meteo Marine** para buscar a altura exata das ondas em tempo real nos principais picos do Ceará (Taíba, Paracuru, Praia do Futuro, etc).
-  * Algoritmo customizado que cruza o tamanho real da onda atual com o peso e nível de surf do usuário (Iniciante, Intermediário, Avançado, Pró).
-  * O sistema calcula a faixa de litragem e o estilo ideal, retornando a melhor opção de prancha disponível no *quiver* para as condições reais do mar.
+## 📖 About the Project
 
-## 🛠️ Tecnologias Utilizadas
+**SurfAdvisor** started as a RESTful API and evolved into a complete Full-Stack application. The system allows surfers to manage their surfboard collections (quiver) visually. The standout feature is the **Smart Recommendation Engine**: using real oceanographic data and crossing it with the surfer's profile, the system recommends the exact surfboard for current ocean conditions.
 
-* **Front-end:** React.js, Tailwind CSS (Design System & Animações), Axios (Consumo de API).
-* **Back-end:** Node.js & Express (Estrutura base e roteamento HTTP).
-* **Banco de Dados:** MongoDB & Mongoose (Modelagem NoSQL com relacionamento direto entre Usuários e Pranchas).
-* **Gestão de Arquivos e Dados:** Multer (Manipulação e conversão de requisições `multipart/form-data`).
-* **Segurança e Autenticação:** JSON Web Token (JWT) e Bcrypt.
+## 🚀 Features
 
-## 🚧 Próximos Passos (Backlog)
+### 📱 UI and Quiver Management (Front-end)
+* **Dynamic Dashboard:** Responsive grid visualization with real-time statistics calculation (Total boards, Accumulated volume, Variety).
+* **Smart Modals (React Portals):** "Transformer" components that handle both creation and editing, managing simultaneous image and data uploads (`FormData`), bypassing CSS *Stacking Context* limitations.
+* **UX Security:** Deletion flows with safety barriers and optimized UI/Server state synchronization.
 
-* **Visualização Detalhada (Zoom-in):** Construção de uma interface dedicada para exibir as pranchas em alta resolução com a ficha técnica completa.
-* **Refinamentos Finais:** Tratamento avançado de erros globais no Front-end e responsividade extrema.
+### 🔐 Security and Authentication (Back-end)
+* User registration with password encryption via `bcrypt`.
+* Secure login and sessions using `JWT` (JSON Web Tokens) and `SameSite` Cookie blocking for cross-origin routes.
+* End-to-end route protection (Users can only access and manipulate their own data).
+
+### 🌊 Smart Recommendation Engine
+* Integration with the **Open-Meteo Marine API** to fetch real-time wave heights at surf spots in Ceará.
+* Customized volume and shape calculation algorithm, matching current ocean conditions with the user's biometrics and skill level.
+
+## 🏗️ System Architecture
+
+The project uses a modern **Client-Server** architecture, separating UI rendering responsibilities from business logic processing.
+
+```mermaid
+graph LR
+    A[User's Browser] -->|HTTPS| B(Front-end: Vercel)
+    B -->|Axios / REST API| C(Back-end: Render)
+    C -->|Mongoose| D[(MongoDB Atlas)]
+    C -->|HTTPS| E[Open-Meteo Marine API]
+    C -->|Multer| F[File Disk / Uploads]
+```
+### 📁 Directory Structure
+```text
+📦 SurfAdvisor
+ ┣ 📂 frontend               # React / Vite Interface
+ ┃ ┣ 📂 src
+ ┃ ┃ ┣ 📂 components         # Modals, Cards, Icons
+ ┃ ┃ ┣ 📂 pages            # Home, Login, Register
+ ┃ ┃ ┣ 📂 services         # Axios Config / Interceptors
+ ┃ ┣ 📜 vercel.json      # SPA routing rules
+ ┃ ┗ 📜 package.json
+ ┗ 📂 backend                # Node.js / Express Server
+   ┣ 📂 src
+   ┃ ┣ 📂 controllers      # Business Logic (Users, Boards)
+   ┃ ┣ 📂 middlewares      # JWT Validation, Global Error Handling, Multer
+   ┃ ┣ 📂 models           # Mongoose Schemas (User, Board)
+   ┃ ┗ 📂 routes           # REST API Endpoints
+   ┣ 📂 uploads            # Media storage
+   ┗ 📜 server.js          # Entry-point and CORS Config
+```
+## 🖼️ File and Image Strategy
+
+The upload management was designed to support the full flow from the user's device to cloud rendering:
+
+1. **Transport Layer:** The Front-end uses the `FormData` object to bundle the binary file with the board's metadata, sending them via a `multipart/form-data` request.
+2. **Processing (Middleware):** On the Back-end, the **Multer** library intercepts the file, generates a unique name based on a *timestamp* (preventing overwrites), and persists it in the local `/uploads` directory.
+3. **Data Persistence:** The MongoDB database stores only the *string* with the unique generated file name. The final URL is dynamically built by the Front-end, pointing to the hosting server.
+
+> **⚠️ Infrastructure Note (V1):** Currently, the Back-end server is hosted on **Render's** free tier. This service uses an *Ephemeral Disk* (temporary). As a result, images uploaded to the `uploads` folder do not survive the virtual machine's restart (sleep) cycles.
+
+## 🛠️ Technologies Used
+
+**Front-end Ecosystem:**
+* **React.js & Vite:** Core UI development and high-performance build tool.
+* **Tailwind CSS:** Utility-first styling for responsive design and animations.
+* **Axios:** HTTP client for asynchronous communication with the server.
+* **React Portals:** Used to render modals outside the main DOM hierarchy, avoiding *Stacking Context* conflicts.
+
+**Back-end Ecosystem:**
+* **Node.js & Express.js:** Runtime environment and routing framework for the REST API.
+* **MongoDB Atlas & Mongoose:** Cloud-managed NoSQL database and ODM for data modeling and schema validation.
+* **JWT (JSON Web Token) & Bcrypt:** Guarantee of secure sessions (via restricted cookies) and password encryption.
+* **Multer:** Middleware for efficient file handling in `multipart/form-data` requests.
