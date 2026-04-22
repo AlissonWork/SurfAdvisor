@@ -1,6 +1,6 @@
 import imageShortboard from "../assets/shortboard.png";
 import imageFish from "../assets/fish.png";
-import imageLongboard from "../assets/longboard.png";
+import imageLongboard from "../assets/Longboard.png";
 import imageFunboard from "../assets/funboard.png";
 import imageGun from "../assets/gun.png";
 import imageSoftboard from "../assets/softboard.png";
