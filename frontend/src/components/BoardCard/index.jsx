@@ -33,7 +33,7 @@ export default function BoardCard({ prancha, onDeleteSuccess }) {
         {prancha.imagem && (
           <div className="relative overflow-hidden">
             <img
-              src={`http://localhost:3000/${prancha.imagem}`}
+              src={`https://surfadvisor-api.onrender.com/uploads/${prancha.imagem}`}
               alt={prancha.nome}
               className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             />
@@ -96,7 +96,7 @@ export default function BoardCard({ prancha, onDeleteSuccess }) {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         prancha={prancha}
-        onBoardAdded={onDeleteSuccess} 
+        onBoardAdded={onDeleteSuccess}
       />
 
       <BoardDetailsModal
