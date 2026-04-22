@@ -33,7 +33,7 @@ export default function BoardCard({ prancha, onDeleteSuccess }) {
         {prancha.imagem && (
           <div className="relative overflow-hidden">
             <img
-              src={`https://surfadvisor-api.onrender.com/uploads/${prancha.imagem}`}
+              src={`https://surfadvisor-api.onrender.com/${prancha.imagem}`}
               alt={prancha.nome}
               className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             />
