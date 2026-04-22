@@ -1,5 +1,5 @@
 import express from "express";
-import BoardController from "../controllers/BoardController.js";
+import BoardController from "../controllers/boardController.js";
 import verificarToken from "../middlewares/verificarToken.js";
 import uploadMulter from "../middlewares/uploadMulter.js";
 
