@@ -7,7 +7,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [peso, setPeso] = useState("");
-  const [nivel, setNivel] = useState("Iniciante");
+  const [nivel, setNivel] = useState("beginner");
 
   const navigate = useNavigate();
 
